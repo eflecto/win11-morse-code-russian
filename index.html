@@ -9,9 +9,13 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Inter:wght@300;400;600;700&display=swap');
         body { font-family: 'Inter', sans-serif; background-color: #0f172a; color: #f8fafc; }
-        code, pre { font-family: 'Fira Code', monospace; }
+        code, pre, textarea { font-family: 'Fira Code', monospace; }
         .gradient-text { background: linear-gradient(90deg, #38bdf8, #818cf8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         .card { background: rgba(30, 41, 59, 0.7); border: 1px solid rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); }
+        .tab-active { background: rgba(59, 130, 246, .18); border-color: rgba(59,130,246,.35); color: #e2e8f0; }
+        .kbd { border: 1px solid rgba(255,255,255,.12); background: rgba(2,6,23,.55); padding: 2px 8px; border-radius: 10px; font-weight: 600; }
+        .toast { position: fixed; right: 16px; bottom: 16px; z-index: 9999; transform: translateY(16px); opacity: 0; pointer-events: none; transition: all .22s ease; }
+        .toast.show { transform: translateY(0); opacity: 1; }
     </style>
 </head>
 <body class="min-h-screen">
@@ -22,10 +26,11 @@
                 <i class="fas fa-wave-square text-blue-400 text-xl"></i>
                 <span class="font-bold text-lg tracking-tight">win11-morse-code-russian</span>
             </div>
-            <div class="flex space-x-6 text-sm font-medium text-slate-400">
+            <div class="hidden md:flex space-x-6 text-sm font-medium text-slate-400">
                 <a href="#about" class="hover:text-white transition">О проекте</a>
+                <a href="#repo" class="hover:text-white transition">Файлы репо</a>
                 <a href="#setup" class="hover:text-white transition">Установка</a>
-                <a href="#code" class="hover:text-white transition">Код</a>
+                <a href="#publish" class="hover:text-white transition">Публикация</a>
                 <a href="#demo" class="hover:text-white transition">Демо</a>
             </div>
             <a href="https://github.com/eflecto/win11-morse-code-russian" target="_blank" class="bg-slate-800 hover:bg-slate-700 px-4 py-2 rounded-lg text-sm flex items-center gap-2 border border-white/10 transition">
@@ -36,169 +41,207 @@
 
     <main class="max-w-5xl mx-auto px-4 py-12">
         <!-- Hero Section -->
-        <header class="text-center mb-20" id="about">
+        <header class="text-center mb-16" id="about">
             <h1 class="text-5xl md:text-7xl font-extrabold mb-6 gradient-text tracking-tighter">
                 Морзянка на лету
             </h1>
             <p class="text-xl text-slate-400 max-w-2xl mx-auto leading-relaxed">
-                Python-утилита для Windows 11, которая автоматически перехватывает ввод русской клавиатуры и мгновенно печатает соответствующий код Морзе. Без копирования. Без лишних действий.
+                Python-утилита для Windows 11, которая перехватывает ввод русской клавиатуры и сразу печатает код Морзе. Без копирования. Без лишних действий.
             </p>
             <div class="mt-10 flex flex-wrap justify-center gap-4">
-                <a href="#setup" class="bg-blue-600 hover:bg-blue-500 px-8 py-4 rounded-xl font-bold transition transform hover:scale-105 shadow-lg shadow-blue-500/20">
-                    Начать установку
+                <a href="#repo" class="bg-blue-600 hover:bg-blue-500 px-8 py-4 rounded-xl font-bold transition transform hover:scale-105 shadow-lg shadow-blue-500/20">
+                    Забрать файлы репо
                 </a>
                 <a href="#demo" class="bg-slate-800 hover:bg-slate-700 px-8 py-4 rounded-xl font-bold transition border border-white/10">
                     Попробовать онлайн
                 </a>
             </div>
+            <div class="mt-6 text-sm text-slate-400">
+                Горячая клавиша: <span class="kbd">Alt</span> + <span class="kbd">M</span> — включить/выключить; <span class="kbd">Esc</span> — выход.
+            </div>
         </header>
 
         <!-- Features -->
-        <section class="grid md:grid-cols-3 gap-6 mb-20">
+        <section class="grid md:grid-cols-3 gap-6 mb-16">
             <div class="card p-6 rounded-2xl">
                 <div class="w-12 h-12 bg-blue-500/10 rounded-lg flex items-center justify-center mb-4">
                     <i class="fas fa-bolt text-blue-400 text-xl"></i>
                 </div>
                 <h3 class="text-xl font-bold mb-2">Real-time</h3>
-                <p class="text-slate-400 text-sm">Перевод происходит мгновенно в момент нажатия клавиши в любом приложении.</p>
+                <p class="text-slate-400 text-sm">Перевод происходит в момент нажатия клавиши — в любом приложении (глобальный хук клавиатуры).</p>
             </div>
             <div class="card p-6 rounded-2xl">
                 <div class="w-12 h-12 bg-purple-500/10 rounded-lg flex items-center justify-center mb-4">
                     <i class="fas fa-language text-purple-400 text-xl"></i>
                 </div>
                 <h3 class="text-xl font-bold mb-2">Russian Focus</h3>
-                <p class="text-slate-400 text-sm">Полная поддержка кириллицы (А-Я) и цифр согласно стандарту ГОСТ.</p>
+                <p class="text-slate-400 text-sm">Поддержка кириллицы (А–Я, Ё), цифр и пробела (как разделителя слов).</p>
             </div>
             <div class="card p-6 rounded-2xl">
                 <div class="w-12 h-12 bg-green-500/10 rounded-lg flex items-center justify-center mb-4">
-                    <i class="fas fa-keyboard text-green-400 text-xl"></i>
+                    <i class="fas fa-toggle-on text-green-400 text-xl"></i>
                 </div>
                 <h3 class="text-xl font-bold mb-2">Hotkey Control</h3>
-                <p class="text-slate-400 text-sm">Быстрое включение и выключение скрипта одной горячей клавишей.</p>
+                <p class="text-slate-400 text-sm">Отключай/включай перевод одной комбинацией — удобно для чатов и IDE.</p>
             </div>
         </section>
 
-        <!-- Python Code Section -->
-        <section id="code" class="mb-20">
-            <div class="flex items-center justify-between mb-6">
-                <h2 class="text-3xl font-bold">Python Скрипт</h2>
-                <button onclick="copyCode()" class="text-sm text-blue-400 hover:text-blue-300 font-medium">
-                    <i class="far fa-copy mr-1"></i> Копировать код
-                </button>
-            </div>
-            <div class="card rounded-2xl overflow-hidden border border-white/10">
-                <div class="bg-slate-800/50 px-4 py-2 border-b border-white/10 flex items-center gap-2">
-                    <div class="w-3 h-3 rounded-full bg-red-500"></div>
-                    <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
-                    <div class="w-3 h-3 rounded-full bg-green-500"></div>
-                    <span class="text-xs text-slate-500 ml-2">morse_utility.py</span>
+        <!-- Repository files (README/license/gitignore/etc.) -->
+        <section id="repo" class="mb-16">
+            <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-6">
+                <div>
+                    <h2 class="text-3xl font-bold">Файлы для публикации на GitHub</h2>
+                    <p class="text-slate-400 mt-2 text-sm">Ниже — готовые шаблоны. Выбери файл → нажми «Копировать» → вставь в одноимённый файл в репозитории.</p>
                 </div>
-                <pre id="pythonCode" class="p-6 text-sm leading-relaxed overflow-x-auto text-blue-100">
-import keyboard
-import time
+                <div class="flex gap-2">
+                    <button id="copySelectedBtn" class="bg-slate-800 hover:bg-slate-700 px-4 py-2 rounded-lg text-sm flex items-center gap-2 border border-white/10 transition">
+                        <i class="far fa-copy"></i> Копировать
+                    </button>
+                    <button id="downloadZipBtn" class="bg-blue-600 hover:bg-blue-500 px-4 py-2 rounded-lg text-sm flex items-center gap-2 rounded-lg transition shadow-lg shadow-blue-500/20">
+                        <i class="fa-solid fa-file-zipper"></i> Скачать набор (.zip)
+                    </button>
+                </div>
+            </div>
 
-# Словарь соответствия русских букв азбуке Морзе
-MORSE_DICT = {
-    'А': '.-', 'Б': '-...', 'В': '.--', 'Г': '--.', 'Д': '-..',
-    'Е': '.', 'Ё': '.', 'Ж': '...-', 'З': '--..', 'И': '..',
-    'Й': '.---', 'К': '-.-', 'Л': '.-..', 'М': '--', 'Н': '-.',
-    'О': '---', 'П': '.--.', 'Р': '.-.', 'С': '...', 'Т': '-',
-    'У': '..-', 'Ф': '..-.', 'Х': '....', 'Ц': '-.-.', 'Ч': '---.',
-    'Ш': '----', 'Щ': '--.-', 'Ъ': '--.--', 'Ы': '-.--', 'Ь': '-..-',
-    'Э': '..-..', 'Ю': '..--', 'Я': '.-.-',
-    '1': '.----', '2': '..---', '3': '...--', '4': '....-', '5': '.....',
-    '6': '-....', '7': '--...', '8': '---..', '9': '----.', '0': '-----',
-    ' ': '/'
-}
+            <div class="grid lg:grid-cols-[320px_1fr] gap-6">
+                <div class="card p-4 rounded-2xl">
+                    <div class="text-xs uppercase tracking-wider text-slate-500 font-semibold mb-3">Выбери файл</div>
+                    <div class="space-y-2" id="fileTabs">
+                        <button class="w-full text-left px-3 py-2 rounded-xl border border-white/10 text-slate-300 hover:bg-white/5 transition tab-active" data-file="readme">
+                            <i class="fa-brands fa-github mr-2 text-slate-400"></i> README.md
+                        </button>
+                        <button class="w-full text-left px-3 py-2 rounded-xl border border-white/10 text-slate-300 hover:bg-white/5 transition" data-file="main">
+                            <i class="fa-brands fa-python mr-2 text-slate-400"></i> main.py
+                        </button>
+                        <button class="w-full text-left px-3 py-2 rounded-xl border border-white/10 text-slate-300 hover:bg-white/5 transition" data-file="requirements">
+                            <i class="fa-solid fa-list-check mr-2 text-slate-400"></i> requirements.txt
+                        </button>
+                        <button class="w-full text-left px-3 py-2 rounded-xl border border-white/10 text-slate-300 hover:bg-white/5 transition" data-file="gitignore">
+                            <i class="fa-solid fa-ban mr-2 text-slate-400"></i> .gitignore
+                        </button>
+                        <button class="w-full text-left px-3 py-2 rounded-xl border border-white/10 text-slate-300 hover:bg-white/5 transition" data-file="license">
+                            <i class="fa-regular fa-id-badge mr-2 text-slate-400"></i> LICENSE (MIT)
+                        </button>
+                    </div>
 
-enabled = True
+                    <div class="mt-5 border-t border-white/10 pt-4">
+                        <div class="text-xs uppercase tracking-wider text-slate-500 font-semibold mb-2">Подсказки</div>
+                        <ul class="text-xs text-slate-400 space-y-2">
+                            <li>• Дата в лицензии: <span class="text-slate-200">2026</span> (сегодня 12.01.2026)</li>
+                            <li>• Репозиторий: <span class="text-slate-200">eflecto/win11-morse-code-russian</span></li>
+                            <li>• Windows: запускать от <span class="text-slate-200">Администратора</span></li>
+                        </ul>
+                    </div>
+                </div>
 
-def on_press(event):
-    global enabled
-    
-    # Переключение работы по нажатию Alt+M
-    if event.name == 'm' and keyboard.is_pressed('alt'):
-        enabled = not enabled
-        state = "ВКЛЮЧЕН" if enabled else "ВЫКЛЮЧЕН"
-        print(f"Статус: {state}")
-        return
-
-    if not enabled:
-        return
-
-    # Проверяем, является ли символ русской буквой или цифрой
-    char = event.name.upper()
-    if char in MORSE_DICT:
-        # Стираем введенный символ (backspace)
-        keyboard.press_and_release('backspace')
-        # Печатаем код Морзе
-        keyboard.write(MORSE_DICT[char] + ' ')
-
-print("Утилита win11-morse-code-russian запущена!")
-print("Используйте ALT + M для включения/выключения")
-print("Нажмите ESC для выхода")
-
-keyboard.on_press(on_press)
-keyboard.wait('esc')
-                </pre>
+                <div class="card rounded-2xl overflow-hidden border border-white/10">
+                    <div class="bg-slate-800/50 px-4 py-2 border-b border-white/10 flex items-center gap-3">
+                        <div class="w-3 h-3 rounded-full bg-red-500"></div>
+                        <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
+                        <div class="w-3 h-3 rounded-full bg-green-500"></div>
+                        <div class="flex-1 min-w-0">
+                            <div class="text-xs text-slate-500 truncate" id="selectedFilename">README.md</div>
+                        </div>
+                        <div class="text-xs text-slate-500">выбранный файл</div>
+                    </div>
+                    <pre id="selectedFileContent" class="p-6 text-[12px] sm:text-sm leading-relaxed overflow-x-auto text-blue-100"></pre>
+                </div>
             </div>
         </section>
 
         <!-- Setup Guide -->
-        <section id="setup" class="mb-20">
-            <h2 class="text-3xl font-bold mb-8 text-center">Инструкция по публикации на GitHub</h2>
+        <section id="setup" class="mb-16">
+            <h2 class="text-3xl font-bold mb-8 text-center">Установка на Windows 11</h2>
             <div class="grid md:grid-cols-2 gap-8">
                 <div class="card p-8 rounded-2xl">
-                    <h3 class="text-xl font-bold mb-4 text-blue-400">1. Подготовка окружения</h3>
+                    <h3 class="text-xl font-bold mb-4 text-blue-400">1) Подготовка окружения</h3>
                     <ul class="space-y-4 text-slate-400">
                         <li class="flex gap-3">
                             <span class="bg-blue-500/20 text-blue-400 w-6 h-6 rounded-full flex items-center justify-center shrink-0 text-xs">1</span>
-                            <span>Установите Python с сайта <a href="https://python.org" class="text-white underline">python.org</a></span>
+                            <span>Установи Python 3.11+ с <a href="https://python.org" class="text-white underline" target="_blank">python.org</a> (галочку <span class="text-slate-200">Add python to PATH</span> включить).</span>
                         </li>
                         <li class="flex gap-3">
                             <span class="bg-blue-500/20 text-blue-400 w-6 h-6 rounded-full flex items-center justify-center shrink-0 text-xs">2</span>
-                            <span>Откройте терминал (CMD или PowerShell)</span>
+                            <span>Открой PowerShell/Terminal <span class="text-slate-200">от имени администратора</span>.</span>
                         </li>
                         <li class="flex gap-3">
                             <span class="bg-blue-500/20 text-blue-400 w-6 h-6 rounded-full flex items-center justify-center shrink-0 text-xs">3</span>
-                            <span>Установите библиотеку: <code class="bg-black/50 px-2 py-1 rounded text-pink-400">pip install keyboard</code></span>
+                            <span>Установи зависимости: <code class="bg-black/50 px-2 py-1 rounded text-pink-400">pip install -r requirements.txt</code></span>
+                        </li>
+                        <li class="flex gap-3">
+                            <span class="bg-blue-500/20 text-blue-400 w-6 h-6 rounded-full flex items-center justify-center shrink-0 text-xs">4</span>
+                            <span>Запуск: <code class="bg-black/50 px-2 py-1 rounded text-pink-400">python main.py</code></span>
                         </li>
                     </ul>
                 </div>
                 <div class="card p-8 rounded-2xl">
-                    <h3 class="text-xl font-bold mb-4 text-purple-400">2. Публикация в репозиторий</h3>
+                    <h3 class="text-xl font-bold mb-4 text-purple-400">2) Как пользоваться</h3>
                     <div class="space-y-4 text-slate-400 text-sm">
-                        <p>Структура вашего проекта:</p>
-                        <ul class="list-disc list-inside bg-black/20 p-2 rounded">
-                            <li>main.py (основной код)</li>
-                            <li>requirements.txt (текст: keyboard)</li>
-                            <li>README.md (описание)</li>
+                        <p>После запуска утилита «слушает» клавиатуру глобально.</p>
+                        <ul class="space-y-2">
+                            <li>• <span class="kbd">Alt</span> + <span class="kbd">M</span> — переключить режим (вкл/выкл).</li>
+                            <li>• <span class="kbd">Esc</span> — завершить программу.</li>
+                            <li>• Пробел преобразуется в <code class="bg-black/50 px-2 py-1 rounded text-pink-400">/</code> (разделитель слов).</li>
                         </ul>
-                        <p class="mt-4">Команды для терминала:</p>
-                        <div class="bg-black/40 p-3 rounded font-mono text-[10px] sm:text-xs">
-                            git init<br>
-                            git add .<br>
-                            git commit -m "initial release"<br>
-                            git branch -M main<br>
-                            git remote add origin https://github.com/eflecto/win11-morse-code-russian.git<br>
-                            git push -u origin main
+                        <p class="text-xs italic mt-2 text-yellow-500/80">Важно: библиотека keyboard часто требует запуск от Администратора; в некоторых окружениях может блокироваться антивирусом/политиками — это нормально для глобального перехвата клавиш.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Publishing instructions -->
+        <section id="publish" class="mb-16">
+            <h2 class="text-3xl font-bold mb-6">Инструкция: как опубликовать на GitHub (eflecto)</h2>
+            <div class="grid lg:grid-cols-2 gap-6">
+                <div class="card p-8 rounded-2xl">
+                    <h3 class="text-xl font-bold mb-4 text-green-400">Вариант A — через Git (рекомендуется)</h3>
+                    <ol class="space-y-3 text-slate-400 text-sm list-decimal list-inside">
+                        <li>Создай папку проекта, положи туда файлы: <code class="bg-black/40 px-2 py-1 rounded">main.py</code>, <code class="bg-black/40 px-2 py-1 rounded">README.md</code>, <code class="bg-black/40 px-2 py-1 rounded">LICENSE</code>, <code class="bg-black/40 px-2 py-1 rounded">.gitignore</code>, <code class="bg-black/40 px-2 py-1 rounded">requirements.txt</code>.</li>
+                        <li>Открой терминал в папке проекта и выполни:</li>
+                    </ol>
+                    <div class="bg-black/40 p-4 rounded-xl font-mono text-[11px] sm:text-xs text-slate-200 overflow-x-auto">
+                        git init
+                        <br>git add .
+                        <br>git commit -m "Initial release"
+                        <br>git branch -M main
+                        <br>git remote add origin https://github.com/eflecto/win11-morse-code-russian.git
+                        <br>git push -u origin main
+                    </div>
+                    <div class="mt-4 text-xs text-slate-400">
+                        Если репозиторий ещё не создан: открой GitHub → <span class="text-slate-200">New repository</span> → имя <span class="text-slate-200">win11-morse-code-russian</span> → Public.
+                    </div>
+                </div>
+
+                <div class="card p-8 rounded-2xl">
+                    <h3 class="text-xl font-bold mb-4 text-blue-400">Вариант B — через веб-интерфейс GitHub</h3>
+                    <ul class="space-y-3 text-slate-400 text-sm">
+                        <li>• Создай репозиторий <span class="text-slate-200">eflecto/win11-morse-code-russian</span>.</li>
+                        <li>• Нажми <span class="text-slate-200">Add file → Create new file</span> и по очереди создай файлы, вставляя содержимое из секции выше.</li>
+                        <li>• Для <span class="text-slate-200">main.py</span> не забудь включить переносы строк без изменений — GitHub сохранит корректно.</li>
+                    </ul>
+                    <div class="mt-5 border-t border-white/10 pt-4">
+                        <h4 class="font-semibold text-slate-200 mb-2">(Опционально) Релиз</h4>
+                        <div class="bg-black/40 p-4 rounded-xl font-mono text-[11px] sm:text-xs text-slate-200 overflow-x-auto">
+                            git tag v1.0.0
+                            <br>git push origin v1.0.0
                         </div>
-                        <p class="text-xs italic mt-2 text-yellow-500/70">Примечание: Запускайте скрипт от имени Администратора, чтобы перехват клавиш работал глобально.</p>
+                        <p class="text-xs text-slate-400 mt-2">GitHub → Releases → Draft a new release → Tag <span class="text-slate-200">v1.0.0</span> → publish.</p>
                     </div>
                 </div>
             </div>
         </section>
 
         <!-- Demo Simulator -->
-        <section id="demo" class="mb-20">
+        <section id="demo" class="mb-16">
             <div class="card p-10 rounded-3xl border-2 border-blue-500/20">
                 <h2 class="text-3xl font-bold mb-2 text-center">Живой Демо-Переводчик</h2>
-                <p class="text-center text-slate-400 mb-8 text-sm">Введите русский текст ниже, чтобы увидеть, как работает алгоритм</p>
-                
+                <p class="text-center text-slate-400 mb-8 text-sm">Введите русский текст ниже, чтобы увидеть, как выглядит результат</p>
+
                 <div class="space-y-6">
                     <div>
                         <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-2">Русский текст</label>
                         <input type="text" id="demoInput" placeholder="Введите привет..." class="w-full bg-slate-900 border border-white/10 rounded-xl px-6 py-4 text-lg focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition">
+                        <div class="mt-2 text-xs text-slate-500">Подсказка: попробуй «СОС», «ПРИВЕТ», «ЁЖ», «123».</div>
                     </div>
                     <div>
                         <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-2">Азбука Морзе</label>
@@ -212,13 +255,21 @@ keyboard.wait('esc')
     </main>
 
     <footer class="border-t border-white/10 py-12 text-center text-slate-500 text-sm">
-        <p>© 2023 eflecto. Проект создан специально для GitHub.</p>
-        <p class="mt-2 flex items-center justify-center gap-4">
-            <span>Made with <i class="fas fa-heart text-red-500"></i> in Windows 11</span>
-        </p>
+        <p>© 2026 eflecto. Проект создан для GitHub.</p>
+        <p class="mt-2">Windows 11 • Python • Russian Morse</p>
     </footer>
 
+    <div id="toast" class="toast">
+        <div class="card px-4 py-3 rounded-xl border border-white/10 bg-slate-900/80">
+            <div class="flex items-center gap-2 text-sm">
+                <i class="fa-solid fa-check text-green-400"></i>
+                <span id="toastText" class="text-slate-200">Скопировано</span>
+            </div>
+        </div>
+    </div>
+
     <script>
+        // Shared map (also mirrored in Python).
         const morseMap = {
             'А': '.-', 'Б': '-...', 'В': '.--', 'Г': '--.', 'Д': '-..',
             'Е': '.', 'Ё': '.', 'Ж': '...-', 'З': '--..', 'И': '..',
@@ -232,28 +283,210 @@ keyboard.wait('esc')
             ' ': '/'
         };
 
+        // Demo translator
         const input = document.getElementById('demoInput');
         const output = document.getElementById('demoOutput');
-
         input.addEventListener('input', (e) => {
             const val = e.target.value.toUpperCase();
             let result = '';
             for (let char of val) {
-                if (morseMap[char]) {
-                    result += morseMap[char] + ' ';
-                } else {
-                    result += '? ';
-                }
+                if (morseMap[char]) result += morseMap[char] + ' ';
+                else if (char === '\n') result += '/ ';
+                else result += '? ';
             }
-            output.textContent = result || '... --- ...';
+            output.textContent = result.trim() || '... --- ...';
         });
 
-        function copyCode() {
-            const code = document.getElementById('pythonCode').innerText;
-            navigator.clipboard.writeText(code).then(() => {
-                alert('Код скопирован в буфер обмена!');
+        // Repo file templates
+        const templates = {
+            readme: {
+                filename: 'README.md',
+                content: `# win11-morse-code-russian\n\n[![Python](https://img.shields.io/badge/Python-3.9%2B-3776AB?logo=python&logoColor=white)](https://www.python.org/)\n[![Platform](https://img.shields.io/badge/Platform-Windows%2011-0078D4?logo=windows&logoColor=white)](#)\n[![License: MIT](https://img.shields.io/badge/License-MIT-22c55e.svg)](LICENSE)\n[![Repo](https://img.shields.io/badge/GitHub-eflecto%2Fwin11--morse--code--russian-111827?logo=github)](https://github.com/eflecto/win11-morse-code-russian)\n\nУтилита для Windows 11: перехватывает ввод с клавиатуры и **автоматически заменяет русские буквы на соответствующий код Морзе** (в любом приложении).\n\n## Возможности\n\n- Глобальный перехват клавиатуры (real-time)\n- Русский алфавит (А–Я, Ё) + цифры (0–9)\n- Пробел → \`/\` (разделитель слов)\n- Горячая клавиша: **Alt + M** (вкл/выкл), **Esc** (выход)\n\n## Установка\n\n> Важно: запускай терминал/IDE **от имени администратора**, иначе глобальный хук клавиатуры может не работать.\n\n\`\`\`bash\npip install -r requirements.txt\npython main.py\n\`\`\`\n\n## Как пользоваться\n\n1. Запусти: \`python main.py\n2. Нажми **Alt + M** чтобы включить перевод\n3. Печатай русские буквы в любом приложении — ввод заменится на Морзянку\n4. **Esc** — завершить программу\n\n## Примечания\n\n- Проект использует библиотеку [keyboard](https://pypi.org/project/keyboard/).\n- В некоторых окружениях перехват клавиатуры может блокироваться политиками безопасности/антивирусом.\n\n## Лицензия\n\nMIT © 2026 eflecto\n`
+            },
+            main: {
+                filename: 'main.py',
+                content: `import keyboard\n\n# Русский алфавит (А–Я, Ё) + цифры (0–9) + пробел\n# Пробел преобразуется в '/' как разделитель слов\nMORSE_DICT = {\n    'А': '.-', 'Б': '-...', 'В': '.--', 'Г': '--.', 'Д': '-..',\n    'Е': '.', 'Ё': '.', 'Ж': '...-', 'З': '--..', 'И': '..',\n    'Й': '.---', 'К': '-.-', 'Л': '.-..', 'М': '--', 'Н': '-.',\n    'О': '---', 'П': '.--.', 'Р': '.-.', 'С': '...', 'Т': '-',\n    'У': '..-', 'Ф': '..-.', 'Х': '....', 'Ц': '-.-.', 'Ч': '---.',\n    'Ш': '----', 'Щ': '--.-', 'Ъ': '--.--', 'Ы': '-.--', 'Ь': '-..-',\n    'Э': '..-..', 'Ю': '..--', 'Я': '.-.-',\n    '1': '.----', '2': '..---', '3': '...--', '4': '....-', '5': '.....',\n    '6': '-....', '7': '--...', '8': '---..', '9': '----.', '0': '-----',\n    ' ': '/'\n}\n\nenabled = True\n\n\ndef on_press(event):\n    global enabled\n\n    # Alt+M — переключить режим\n    if event.name == 'm' and keyboard.is_pressed('alt'):\n        enabled = not enabled\n        state = "ON" if enabled else "OFF"\n        print(f"[win11-morse-code-russian] state: {state}")\n        return\n\n    if not enabled:\n        return\n\n    # event.name обычно строка (например 'a', 'space', '1').\n    # Для русских букв keyboard может отдавать уже символ — зависит от раскладки/окружения.\n    name = event.name\n\n    # Нормализуем пробел\n    if name == 'space':\n        char = ' '\n    else:\n        # Берём первый символ, приводим к верхнему регистру\n        char = str(name).upper()[:1]\n\n    if char in MORSE_DICT:\n        # Стираем введённый символ и печатаем морзянку\n        keyboard.press_and_release('backspace')\n        keyboard.write(MORSE_DICT[char] + ' ')\n\n\nif __name__ == '__main__':\n    print("win11-morse-code-russian started")\n    print("Alt+M: toggle on/off")\n    print("Esc: exit")\n\n    keyboard.on_press(on_press)\n    keyboard.wait('esc')\n`
+            },
+            requirements: {
+                filename: 'requirements.txt',
+                content: `keyboard>=0.13.5\n`
+            },
+            gitignore: {
+                filename: '.gitignore',
+                content: `# Python\n__pycache__/\n*.py[cod]\n*.pyd\n*.pyo\n*.egg-info/\ndist/\nbuild/\n.venv/\nvenv/\n\n# IDE\n.vscode/\n.idea/\n\n# OS\n.DS_Store\nThumbs.db\nDesktop.ini\n\n# Logs\n*.log\n`
+            },
+            license: {
+                filename: 'LICENSE',
+                content: `MIT License\n\nCopyright (c) 2026 eflecto\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the "Software"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE.\n`
+            }
+        };
+
+        const selectedFilename = document.getElementById('selectedFilename');
+        const selectedFileContent = document.getElementById('selectedFileContent');
+        const fileTabs = document.getElementById('fileTabs');
+        const copySelectedBtn = document.getElementById('copySelectedBtn');
+        const downloadZipBtn = document.getElementById('downloadZipBtn');
+
+        let selectedKey = 'readme';
+
+        function renderSelected() {
+            const tpl = templates[selectedKey];
+            selectedFilename.textContent = tpl.filename;
+            selectedFileContent.textContent = tpl.content;
+
+            [...fileTabs.querySelectorAll('button[data-file]')].forEach(btn => {
+                const isActive = btn.dataset.file === selectedKey;
+                btn.classList.toggle('tab-active', isActive);
             });
         }
+
+        fileTabs.addEventListener('click', (e) => {
+            const btn = e.target.closest('button[data-file]');
+            if (!btn) return;
+            selectedKey = btn.dataset.file;
+            renderSelected();
+        });
+
+        function showToast(text) {
+            const toast = document.getElementById('toast');
+            const toastText = document.getElementById('toastText');
+            toastText.textContent = text;
+            toast.classList.add('show');
+            window.clearTimeout(showToast._t);
+            showToast._t = window.setTimeout(() => toast.classList.remove('show'), 1600);
+        }
+
+        copySelectedBtn.addEventListener('click', async () => {
+            const tpl = templates[selectedKey];
+            try {
+                await navigator.clipboard.writeText(tpl.content);
+                showToast(`Скопировано: ${tpl.filename}`);
+            } catch {
+                showToast('Не удалось скопировать (нет доступа к буферу)');
+            }
+        });
+
+        // Minimal zip builder (store method) for small text files
+        function crc32(buf) {
+            let crc = ~0;
+            for (let i = 0; i < buf.length; i++) {
+                crc ^= buf[i];
+                for (let k = 0; k < 8; k++) crc = (crc >>> 1) ^ (0xEDB88320 & (-(crc & 1)));
+            }
+            return (~crc) >>> 0;
+        }
+
+        function u16(n){ return new Uint8Array([n & 255, (n>>>8) & 255]); }
+        function u32(n){ return new Uint8Array([n & 255, (n>>>8) & 255, (n>>>16) & 255, (n>>>24) & 255]); }
+
+        function strBytes(s){ return new TextEncoder().encode(s); }
+
+        function makeZip(files) {
+            const localParts = [];
+            const centralParts = [];
+            let offset = 0;
+
+            for (const f of files) {
+                const nameBytes = strBytes(f.name);
+                const dataBytes = strBytes(f.content);
+                const c = crc32(dataBytes);
+
+                // Local file header
+                const localHeader = [
+                    u32(0x04034b50), // signature
+                    u16(20), // version
+                    u16(0), // flags
+                    u16(0), // compression 0=store
+                    u16(0), // mod time
+                    u16(0), // mod date
+                    u32(c),
+                    u32(dataBytes.length),
+                    u32(dataBytes.length),
+                    u16(nameBytes.length),
+                    u16(0) // extra len
+                ];
+
+                const localBlob = concatBytes([...localHeader, nameBytes, dataBytes]);
+                localParts.push(localBlob);
+
+                // Central directory header
+                const centralHeader = [
+                    u32(0x02014b50),
+                    u16(20), // version made by
+                    u16(20), // version needed
+                    u16(0),
+                    u16(0),
+                    u16(0),
+                    u16(0),
+                    u32(c),
+                    u32(dataBytes.length),
+                    u32(dataBytes.length),
+                    u16(nameBytes.length),
+                    u16(0), // extra
+                    u16(0), // comment
+                    u16(0), // disk
+                    u16(0), // int attrs
+                    u32(0), // ext attrs
+                    u32(offset)
+                ];
+
+                const centralBlob = concatBytes([...centralHeader, nameBytes]);
+                centralParts.push(centralBlob);
+
+                offset += localBlob.length;
+            }
+
+            const centralStart = offset;
+            const centralDir = concatBytes(centralParts);
+            offset += centralDir.length;
+
+            const end = concatBytes([
+                u32(0x06054b50),
+                u16(0),
+                u16(0),
+                u16(files.length),
+                u16(files.length),
+                u32(centralDir.length),
+                u32(centralStart),
+                u16(0)
+            ]);
+
+            return concatBytes([...localParts, centralDir, end]);
+        }
+
+        function concatBytes(parts) {
+            let total = 0;
+            for (const p of parts) total += p.length;
+            const out = new Uint8Array(total);
+            let off = 0;
+            for (const p of parts) {
+                out.set(p, off);
+                off += p.length;
+            }
+            return out;
+        }
+
+        downloadZipBtn.addEventListener('click', () => {
+            const files = [
+                { name: 'README.md', content: templates.readme.content },
+                { name: 'main.py', content: templates.main.content },
+                { name: 'requirements.txt', content: templates.requirements.content },
+                { name: '.gitignore', content: templates.gitignore.content },
+                { name: 'LICENSE', content: templates.license.content }
+            ];
+            const zipBytes = makeZip(files);
+            const blob = new Blob([zipBytes], { type: 'application/zip' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = 'win11-morse-code-russian_repo_files.zip';
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+            showToast('Скачан набор файлов (.zip)');
+        });
+
+        renderSelected();
     </script>
 </body>
 </html>
